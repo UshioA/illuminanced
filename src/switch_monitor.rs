@@ -69,6 +69,7 @@ impl SwitchMonitor {
             std::thread::sleep(std::time::Duration::from_secs(timeout));
             return (self.state, false);
         }
+
         let mut fd = self.fd.as_ref().unwrap();
 
         let rc = unsafe {

@@ -130,6 +130,14 @@ fn main_loop(
                         illuminance, illuminance_k, brightness, new
                     );
                     set_brightness(config, new);
+                    set_kbd_brightness(
+                        config,
+                        match new {
+                            0..=20 => 2,
+                            21..=50 => 1,
+                            _ => 0,
+                        },
+                    );
                 }
             }
             _ => error!("Cannot read illuminance"),
@@ -143,6 +151,12 @@ fn main_loop(
 fn set_brightness(config: &Config, value: u32) {
     if let Err(e) = write_u32_to_file(config.backlight_filename(), value) {
         error!("Cannot set brightness: {}", e);
+    }
+}
+
+fn set_kbd_brightness(config: &Config, value: u32) {
+    if let Err(e) = write_u32_to_file(config.kbd_brightness(), value) {
+        error!("Cannot set kbd brightness: {}", e);
     }
 }
 
@@ -195,6 +209,7 @@ pub enum ErrorCode {
     TracerCreateError,
     DaemonizeErrror,
     ReadMaxBrightnessError,
+    ReadMaxKBDBrightnessError,
     InvalidPointsInConfig,
     ReadBacklightError,
     ReadIlluminanceError,
@@ -230,7 +245,6 @@ fn run() -> Result<(), ErrorCode> {
             return Err(ErrorCode::InvalidArgs);
         }
     };
-
     if matches.opt_present("help") || !matches.free.is_empty() {
         print_usage(&program, opts);
         return Ok(());
@@ -251,7 +265,6 @@ fn run() -> Result<(), ErrorCode> {
         }
         Config::new(f.ok().and_then(|f| parse_config(&f).ok()))
     };
-
     if matches.opt_present("d") {
         let _ = TermLogger::init(
             LevelFilter::Debug,
@@ -293,9 +306,8 @@ fn run() -> Result<(), ErrorCode> {
 
     let light_points = config.light_points()?;
     let light_convertor = LightConvertor::new(light_points);
-    let max_brightness = read_file_to_u32(config.max_backlight_filename())
-        .ok_or(ErrorCode::ReadMaxBrightnessError)?;
-
+    let max_kbd_brightness = read_file_to_u32(config.kbd_max_brightness())
+        .ok_or(ErrorCode::ReadMaxKBDBrightnessError)?;
     let illuminance_filename = match glob::glob(config.illuminance_filename()) {
         Err(e) => {
             error!("Cannot glob({}): {}", config.illuminance_filename(), e);
@@ -340,7 +352,7 @@ fn run() -> Result<(), ErrorCode> {
     main_loop(
         &config,
         &light_convertor,
-        max_brightness,
+        max_kbd_brightness,
         switch_monitor,
         &illuminance_filename,
     )

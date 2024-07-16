@@ -34,6 +34,16 @@ impl Config {
             .unwrap_or("/var/run/illuminanced.pid")
     }
 
+    pub fn kbd_brightness(&self) -> &str {
+        self.get_str("general", "kbd_backlight_brightness")
+            .unwrap_or("/sys/class/leds/platform::kbd_backlight/brightness")
+    }
+
+    pub fn kbd_max_brightness(&self) -> &str {
+        self.get_str("general", "kbd_backlight_max_brightness")
+            .unwrap_or("/sys/class/leds/platform::kbd_backlight/max_brightness")
+    }
+
     pub fn light_steps(&self) -> u32 {
         self.get_u32("general", "light_steps").unwrap_or(10)
     }
@@ -78,6 +88,7 @@ impl Config {
         self.get_f32("kalman", "covariance").unwrap_or(10.0)
     }
 
+    #[allow(dead_code)]
     pub fn max_backlight_filename(&self) -> &str {
         self.get_str("general", "max_backlight_file")
             .unwrap_or("/sys/class/backlight/intel_backlight/max_brightness")

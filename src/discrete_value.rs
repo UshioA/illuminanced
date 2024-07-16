@@ -1,5 +1,3 @@
-use simplelog::ColorChoice;
-
 #[derive(Debug)]
 pub struct DiscreteValue {
     min: u32,
@@ -39,7 +37,7 @@ fn discrete_value_change() {
         LevelFilter::Debug,
         LoggerConfig::default(),
         simplelog::TerminalMode::Mixed,
-        ColorChoice::Auto,
+        simplelog::ColorChoice::Auto,
     );
     let mut v = DiscreteValue::new(10, 100, 10, 0.1);
     assert_eq!(v.update(0.0), None);
