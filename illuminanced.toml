@@ -49,9 +49,9 @@ illuminance_6 = 20000
 light_6 = 20
 
 illuminance_7 = 30000
-light_7 = 30
+light_7 = 25
 
-illuminance_8 = 50000
+illuminance_8 = 60000
 light_8 = 35
 
 illuminance_9 = 70000
