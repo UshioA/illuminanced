@@ -7,15 +7,16 @@ log_level = "ERROR"
 
 [general]
 check_period_in_seconds = 1
-light_steps = 10
-min_backlight = 70
+light_steps = 95
+min_backlight = 5
 step_barrier = 0.1
-max_backlight_file = "/sys/class/backlight/intel_backlight/max_brightness"
-backlight_file = "/sys/class/backlight/intel_backlight/brightness"
-illuminance_file = "/sys/bus/acpi/devices/ACPI0008:00/iio:device0/in_illuminance_raw"
+max_backlight_file = "/sys/class/backlight/nvidia_wmi_ec_backlight/max_brightness"
+backlight_file = "/sys/class/backlight/nvidia_wmi_ec_backlight/brightness"
+illuminance_file = "/sys/bus/iio/devices/iio:device0/in_illuminance_raw"
+# illuminance_file = "/sys/bus/acpi/devices/ACPI0008:00/iio:device0/in_illuminance_raw"
 event_device_mask = "/dev/input/event*"
 event_device_name = "Asus WMI hotkeys"
-enable_max_brightness_mode = true
+enable_max_brightness_mode = false
 filename_for_sensor_activation = ""
 
 [kalman]
@@ -24,7 +25,7 @@ r = 20
 covariance = 10
 
 [light]
-points_count = 6
+points_count = 13
 
 illuminance_0 = 0
 light_0 = 0
@@ -44,3 +45,23 @@ light_4 = 5
 illuminance_5 = 7100
 light_5 = 10
 
+illuminance_6 = 20000
+light_6 = 20
+
+illuminance_7 = 30000
+light_7 = 30
+
+illuminance_8 = 50000
+light_8 = 35
+
+illuminance_9 = 70000
+light_9 = 45
+
+illuminance_10 = 100000
+light_10 = 70
+
+illuminance_11 = 300000
+light_11 = 85
+
+illuminance_12 = 400000
+light_12 = 96
