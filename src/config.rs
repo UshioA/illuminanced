@@ -39,6 +39,7 @@ impl Config {
             .unwrap_or("/sys/class/leds/platform::kbd_backlight/brightness")
     }
 
+    #[allow(dead_code)]
     pub fn kbd_max_brightness(&self) -> &str {
         self.get_str("general", "kbd_backlight_max_brightness")
             .unwrap_or("/sys/class/leds/platform::kbd_backlight/max_brightness")

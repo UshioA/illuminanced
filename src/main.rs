@@ -306,8 +306,8 @@ fn run() -> Result<(), ErrorCode> {
 
     let light_points = config.light_points()?;
     let light_convertor = LightConvertor::new(light_points);
-    let max_kbd_brightness = read_file_to_u32(config.kbd_max_brightness())
-        .ok_or(ErrorCode::ReadMaxKBDBrightnessError)?;
+    let max_brightness = read_file_to_u32(config.max_backlight_filename())
+        .ok_or(ErrorCode::ReadMaxBrightnessError)?;
     let illuminance_filename = match glob::glob(config.illuminance_filename()) {
         Err(e) => {
             error!("Cannot glob({}): {}", config.illuminance_filename(), e);
@@ -352,7 +352,7 @@ fn run() -> Result<(), ErrorCode> {
     main_loop(
         &config,
         &light_convertor,
-        max_kbd_brightness,
+        max_brightness,
         switch_monitor,
         &illuminance_filename,
     )
