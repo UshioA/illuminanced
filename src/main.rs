@@ -341,6 +341,7 @@ fn run() -> Result<(), ErrorCode> {
             read_file_to_u32(config.nvidia_backlight_filename())
         })
         .ok_or(ErrorCode::ReadBacklightError)?;
+    info!("HERE?");
 
     let _ = write_u32_to_file(config.intel_backlight_filename(), brightness).map_err(|_| {
         write_u32_to_file(config.nvidia_backlight_filename(), brightness).unwrap_or_else(|_| {

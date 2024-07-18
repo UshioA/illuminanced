@@ -106,8 +106,8 @@ impl Config {
     }
 
     pub fn nvidia_backlight_filename(&self) -> &str {
-        self.get_str("general", "intel_backlight_file")
-            .unwrap_or("/sys/class/backlight/intel_backlight/brightness")
+        self.get_str("general", "nvidia_backlight_file")
+            .unwrap_or("/sys/class/backlight/nvidia_wmi_ec_backlight/brightness")
     }
 
     pub fn illuminance_filename(&self) -> &str {
