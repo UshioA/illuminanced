@@ -105,6 +105,7 @@ fn main_loop(
     max_brightness: u32,
     mut switch_monitor: switch_monitor::SwitchMonitor,
     illuminance_filename: &str,
+    brightness_file: &str,
 ) -> Result<(), ErrorCode> {
     let mut kalman = Kalman::new(
         config.kalman_q(),
@@ -129,10 +130,10 @@ fn main_loop(
                         "raw {}, kalman {}, new level {} new brightness {}",
                         illuminance, illuminance_k, brightness, new
                     );
-                    set_brightness(config, new);
+                    set_brightness(config, new, brightness_file);
                     set_kbd_brightness(
                         config,
-                        match new {
+                        match new * 100 / max_brightness {
                             0..=20 => 2,
                             21..=50 => 1,
                             _ => 0,
@@ -142,14 +143,19 @@ fn main_loop(
             }
             _ => error!("Cannot read illuminance"),
         }
-        if try_process_switch(&mut switch_monitor, &config, max_brightness) {
+        if try_process_switch(
+            &mut switch_monitor,
+            &config,
+            max_brightness,
+            brightness_file,
+        ) {
             stepped_brightness.update(config.light_steps() as f32);
         }
     }
 }
 
-fn set_brightness(config: &Config, value: u32) {
-    if let Err(e) = write_u32_to_file(config.backlight_filename(), value) {
+fn set_brightness(_config: &Config, value: u32, filename: &str) {
+    if let Err(e) = write_u32_to_file(filename, value) {
         error!("Cannot set brightness: {}", e);
     }
 }
@@ -164,6 +170,7 @@ fn try_process_switch(
     switch_monitor: &mut switch_monitor::SwitchMonitor,
     config: &Config,
     max_brightness: u32,
+    brightness_file: &str,
 ) -> bool {
     let mut timeout = config.check_period_in_seconds();
     loop {
@@ -184,7 +191,7 @@ fn try_process_switch(
                 if changed {
                     info!("maximum by event");
                 }
-                set_brightness(config, max_brightness);
+                set_brightness(config, max_brightness, brightness_file);
                 timeout = 3600;
             }
         }
@@ -306,7 +313,8 @@ fn run() -> Result<(), ErrorCode> {
 
     let light_points = config.light_points()?;
     let light_convertor = LightConvertor::new(light_points);
-    let max_brightness = read_file_to_u32(config.max_backlight_filename())
+    let max_brightness = read_file_to_u32(config.intel_max_backlight_filename())
+        .or_else(|| read_file_to_u32(config.nvidia_max_backlight_filename()))
         .ok_or(ErrorCode::ReadMaxBrightnessError)?;
     let illuminance_filename = match glob::glob(config.illuminance_filename()) {
         Err(e) => {
@@ -326,12 +334,23 @@ fn run() -> Result<(), ErrorCode> {
         error!("Cannot read from {illuminance_filename}");
         ErrorCode::ReadIlluminanceError
     })?;
-    let brightness = read_file_to_u32(config.backlight_filename()).ok_or_else(|| {
-        error!("Cannot read from {}", config.backlight_filename());
-        ErrorCode::ReadBacklightError
-    })?;
-    write_u32_to_file(config.backlight_filename(), brightness)
-        .map_err(|_| ErrorCode::CannotSetBacklight)?;
+    let mut brightness_file: &str = config.intel_backlight_filename();
+    let brightness = read_file_to_u32(config.intel_backlight_filename())
+        .or_else(|| {
+            brightness_file = config.nvidia_backlight_filename();
+            read_file_to_u32(config.nvidia_backlight_filename())
+        })
+        .ok_or(ErrorCode::ReadBacklightError)?;
+
+    let _ = write_u32_to_file(config.intel_backlight_filename(), brightness).map_err(|_| {
+        write_u32_to_file(config.nvidia_backlight_filename(), brightness).unwrap_or_else(|_| {
+            error!(
+                "Cannot write to {} or {}",
+                config.intel_backlight_filename(),
+                config.nvidia_backlight_filename()
+            )
+        })
+    });
 
     let switch_monitor = switch_monitor::SwitchMonitor::new(
         config.event_device_mask(),
@@ -355,6 +374,7 @@ fn run() -> Result<(), ErrorCode> {
         max_brightness,
         switch_monitor,
         &illuminance_filename,
+        brightness_file,
     )
 }
 

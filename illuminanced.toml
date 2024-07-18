@@ -10,8 +10,10 @@ check_period_in_seconds = 2
 light_steps = 96
 min_backlight = 5
 step_barrier = 0.1
-max_backlight_file = "/sys/class/backlight/nvidia_wmi_ec_backlight/max_brightness"
-backlight_file = "/sys/class/backlight/nvidia_wmi_ec_backlight/brightness"
+nvidia_max_backlight_file = "/sys/class/backlight/nvidia_wmi_ec_backlight/max_brightness"
+intel_max_backlight_file = "/sys/class/backlight/intel_backlight/max_brightness"
+nvidia_backlight_file = "/sys/class/backlight/nvidia_wmi_ec_backlight/brightness"
+intel_backlight_file = "/sys/class/backlight/intel_backlight/brightness"
 illuminance_file = "/sys/bus/iio/devices/iio:device0/in_illuminance_raw"
 kbd_backlight_brightness = "/sys/class/leds/platform::kbd_backlight/brightness"
 kbd_backlight_max_brightness = "/sys/class/leds/platform::kbd_backlight/max_brightness"
@@ -49,16 +51,16 @@ illuminance_5 = 7100
 light_5 = 10
 
 illuminance_6 = 20000
-light_6 = 20
+light_6 = 15
 
 illuminance_7 = 30000
-light_7 = 25
+light_7 = 20
 
 illuminance_8 = 60000
-light_8 = 35
+light_8 = 30
 
 illuminance_9 = 85000
-light_9 = 45
+light_9 = 39
 
 illuminance_10 = 100000
 light_10 = 70

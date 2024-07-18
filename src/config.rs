@@ -90,13 +90,23 @@ impl Config {
     }
 
     #[allow(dead_code)]
-    pub fn max_backlight_filename(&self) -> &str {
-        self.get_str("general", "max_backlight_file")
+    pub fn intel_max_backlight_filename(&self) -> &str {
+        self.get_str("general", "intel_max_backlight_file")
             .unwrap_or("/sys/class/backlight/intel_backlight/max_brightness")
     }
 
-    pub fn backlight_filename(&self) -> &str {
-        self.get_str("general", "backlight_file")
+    pub fn nvidia_max_backlight_filename(&self) -> &str {
+        self.get_str("general", "nvidia_max_backlight_file")
+            .unwrap_or("/sys/class/backlight/nvidia_wmi_ec_backlight/max_brightness")
+    }
+
+    pub fn intel_backlight_filename(&self) -> &str {
+        self.get_str("general", "intel_backlight_file")
+            .unwrap_or("/sys/class/backlight/intel_backlight/brightness")
+    }
+
+    pub fn nvidia_backlight_filename(&self) -> &str {
+        self.get_str("general", "intel_backlight_file")
             .unwrap_or("/sys/class/backlight/intel_backlight/brightness")
     }
 
